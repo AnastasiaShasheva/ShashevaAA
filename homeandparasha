@@ -1,0 +1,154 @@
+#include <iostream>
+using namespace std;
+
+#define yellow "\e[33m"
+#define blue "\e[36m"
+#define red "\e[31m"
+#define col_end "\e[0m"
+
+int input_total()
+{
+    while (true)
+    {
+        cout << "Введите количество домов: ";
+        int a;
+        cin >> a;
+
+        if (cin.fail() || a <= 0)
+        {
+            cout << red << "Пожалуйста, введите число, которое будет больше нуля!" << col_end << endl;
+            cin.clear();
+            cin.ignore(32767, '\n');
+        }
+        else
+            return a;
+    }  
+}
+
+int input_need(int K)
+{
+    while (true)
+    {
+        cout << "Введите количество домов, которым требуется интернет: ";
+        int a;
+        cin >> a;
+
+        if (cin.fail() || a < 0 || a > K)
+        {
+            cout << red << "Пожалуйста, введите число, которое будет больше нуля и не больше общего количества домов!" << col_end << endl << endl;
+            cin.clear();
+            cin.ignore(32767, '\n');
+        }
+        else
+            return a;
+    }
+}
+
+int getValues(int i, int k_total)
+{
+    while (true)
+        {
+            cout << "Введите номер " << i+1 << " дома, в который надо провести интернет: ";
+            int a;
+            cin >> a;
+
+            if (cin.fail() || a <= 0 || a > k_total)
+            {
+                cout << red << "Пожалуйста, введите число, которое будет больше нуля и не больше количества домов!" << col_end << endl << endl;
+                cin.clear();
+                cin.ignore(32767, '\n');
+            }
+            else
+                return a;
+        }
+}
+
+void input_arr_need(int *arr_need, int k_need, int k_total)
+{
+    cout << endl;   
+    for (int i = 0; i < k_need; i++)
+    {
+        arr_need[i] = getValues(i, k_total)-1;        
+    }
+}
+
+void sum_input(int *arr_need, int *arr_sum, int k_need, int k_total)
+{
+    for (int i = 0; i < k_total; i++)
+    {   
+        int sum = 0;
+
+        for (int j = 0; j < k_need; j++)
+        {
+            sum += abs(i - arr_need[j]);
+        }
+        arr_sum[i] = sum;
+    }    
+}
+
+int source_min(int *arr_sum, int k_total)
+{
+    int min = arr_sum[0];
+
+    for (int i = 0; i < k_total; i++)
+    {
+        if (arr_sum[i] < min){ min = arr_sum[i]; }
+    }
+    return min;
+}
+
+int count_min(int *arr_sum, int k_total, int min)
+{
+    int count = 0;
+    for (int i = 0; i < k_total; i++)
+    {
+        if (arr_sum[i] == min){ count++; }
+    }
+    return count;
+}
+
+void min_id(int *arr_min_id, int *arr_sum, int count, int k_total, int min)
+{
+    for (int i = 0, j = 0; i < k_total; i++)
+    {
+        if (arr_sum[i] == min){arr_min_id[j] = i+1; j++;}
+    }
+}
+
+void output(int min, int count, int *arr_min_id)
+{
+    cout << endl << yellow << "Минимальный расход проводов будет равняться " << min << "a" << col_end << endl;
+    cout << blue << "Для минимального расхода проводов стоит поставить коммутатор в доме под номерам: ";
+    for (int i = 0; i < count; i++)
+    {
+        cout << arr_min_id[i] << " ";
+    }
+    cout << col_end << endl;
+}
+
+int main()
+{   
+    int k_total, k_need;
+    k_total = input_total();
+    k_need = input_need(k_total);
+
+    if (k_need == 0){ cout << "В этом случае ничего считать и не надо!"; }
+    else
+    {
+        int *arr_need = new int[k_need];
+        int *arr_sum = new int[k_total];
+
+        input_arr_need(arr_need, k_need, k_total);
+        sum_input(arr_need, arr_sum, k_need, k_total);
+
+        int min = source_min(arr_sum, k_total);
+        int count = count_min(arr_sum, k_total, min);
+        
+        int *arr_min_id = new int[count];
+        min_id(arr_min_id, arr_sum, count, k_total, min);
+
+        output(min, count, arr_min_id);
+    }
+    
+    return 0;
+}
