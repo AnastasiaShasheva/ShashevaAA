@@ -52,6 +52,7 @@ int getValues(int i, int k_total)
             int a;
             cin >> a;
 
+
             if (cin.fail() || a <= 0 || a > k_total)
             {
                 cout << red << "Пожалуйста, введите число, которое будет больше нуля и не больше количества домов!" << col_end << endl << endl;
@@ -63,6 +64,24 @@ int getValues(int i, int k_total)
         }
 }
 
+int getVali()
+{
+    while (true)
+    {
+            int a;
+            cin >> a;
+
+            if (cin.fail() || a <= 0 || a > k_total)
+            {
+                cout << red << "Пожалуйста, введите число, которое будет больше нуля и не больше количества домов!" << col_end << endl << endl;
+                cin.clear();
+                cin.ignore(32767, '\n');
+            }
+            else
+                return a;
+    }
+}
+
 void input_arr_need(int *arr_need, int k_need, int k_total)
 {
     cout << endl;   
@@ -70,6 +89,32 @@ void input_arr_need(int *arr_need, int k_need, int k_total)
     {
         arr_need[i] = getValues(i, k_total)-1;        
     }
+
+    bool flag;
+    do
+    {
+        flag = false; int id_i, id_j;
+        for (int i = 0; i < k_need; i++)
+        {
+            for (int j = i+1; j < k_need; j++)
+            {
+                if (arr_need[i] == arr_need[j])
+                {
+                    flag = true;
+                    id_i = i; id_j = j;
+                    break;
+                }
+            }
+        }
+        if (flag)
+        {
+            cout << "Дома " << id_i + 1 << " и " << id_j + 1 << " имеют одинаковый номер!";
+            cout << "Введите заново номер дома " << id_j +1 << ": ";
+            arr_need[id_j] = getValues2(); //while
+        }
+
+    } while (flag);
+    
 }
 
 void sum_input(int *arr_need, int *arr_sum, int k_need, int k_total)
@@ -123,7 +168,14 @@ void output(int min, int count, int *arr_min_id)
     {
         cout << arr_min_id[i] << " ";
     }
-    cout << col_end << endl;
+    cout << col_end << endl << endl;
+}
+
+void del(int *arr_need, int* arr_sum, int* arr_min_id)
+{
+    delete []arr_need;
+    delete []arr_sum;
+    delete []arr_min_id;
 }
 
 int main()
@@ -148,7 +200,9 @@ int main()
         min_id(arr_min_id, arr_sum, count, k_total, min);
 
         output(min, count, arr_min_id);
+        del(arr_need, arr_sum, arr_min_id);
     }
+
     
     return 0;
 }
