@@ -1,0 +1,108 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+#define yellow "\e[33m"
+#define blue "\e[36m"
+#define red "\e[31m"
+#define col_end "\e[0m"
+
+int getValues(int p)
+{
+    string arr[2]{"строк", "столбцов"};
+
+    while (true)
+    {
+        cout << yellow << "Введите количество " << arr[p] << ": " << col_end;
+        long long a;
+        cin >> a;
+
+        if (cin.fail() || a <= 0 || a > 4294967295)
+        {
+            cout << red << "Пожалуйста, введите число, которое будет больше нуля и меньше 4 294 967 295!" << col_end << endl;
+            cin.clear();
+            cin.ignore(32767, '\n');
+        }
+        else
+            return a;
+    }
+}
+
+void input(int **arr, int n, int m, int p)
+{
+    string arr_vers[2]{"Изначальный", "Измененный"};
+    cout << endl << blue << arr_vers[p] << " массив:" << col_end << endl;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            cout << arr[i][j] << "\t";
+        }
+        cout << endl;
+    }
+    if (p==1){ cout << endl; }
+}
+
+void random(int** arr, int n, int m, int max)
+{
+    srand(time(NULL));
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            arr[i][j] = 1 + rand() % max;
+        }
+    }
+}
+
+void swap_col(int **arr, int n, int m)
+{
+    for (int p = 0; p < n; p++)
+    {
+        for (int i = 0, j = m-1; i < m; i++)
+        {
+            if (i % 2 != 0)
+            {
+                for (int k = i; k < m-1; k++)
+                {
+                    arr[p][k] += arr[p][j];
+                    arr[p][j] = arr[p][k] - arr[p][j];
+                    arr[p][k] -= arr[p][j];
+                }
+            }
+        }
+    }
+}
+
+void del(int **arr, int n, int m)
+{
+    for (int i = 0; i < n; i++)
+    {
+        delete [] arr[i];
+    }
+    delete[] arr;
+}
+
+int main()
+{
+    unsigned int n, m;
+    //int max = 350001;
+    
+    n = getValues(0);
+    m = getValues(1);
+    int max = n * m;
+
+    int **arr = new int* [n];
+    for (int i = 0; i < n; i++)
+    {
+        arr[i] = new int[m];
+    }
+
+    random(arr, n, m, max);
+    input(arr, n, m, 0);    
+    swap_col(arr, n, m);
+    input(arr, n, m, 1);
+
+    del(arr, n, m);
+    return 0;
+}
